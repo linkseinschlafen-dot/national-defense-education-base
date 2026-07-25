@@ -1,0 +1,19 @@
+{
+  "name": "national-defense-education-base",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "html-validate index.html && node --check src/main.js"
+  },
+  "dependencies": {
+    "@google/model-viewer": "4.3.1",
+    "meshoptimizer": "0.22.0",
+    "three": "0.183.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "html-validate": "10.10.0"
+  }
+}

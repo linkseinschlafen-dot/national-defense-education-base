@@ -10,29 +10,18 @@
     <meta name="theme-color" content="#0d1110">
     <title>国防教育基地 · 三维游览</title>
 
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin>
     <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./styles.css">
 
     <script>
       self.ModelViewerElement = self.ModelViewerElement || {};
       self.ModelViewerElement.meshoptDecoderLocation =
-        "https://cdn.jsdelivr.net/npm/meshoptimizer@0.22.0/meshopt_decoder.js";
+        "./assets/js/meshopt_decoder.js?v=20260725-2";
     </script>
     <script
       type="module"
-      src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"
+      src="./assets/js/model-viewer.min.js?v=20260725-2"
     ></script>
-
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
-        }
-      }
-    </script>
   </head>
 
   <body>
@@ -189,7 +178,7 @@
       <model-viewer
         id="ar-launcher"
         class="ar-launcher"
-        ios-src="./assets/models/defense-base-ar.usdz"
+        ios-src="./assets/models/defense-base-ar.usdz?v=20260725-2"
         ar
         ar-modes="webxr scene-viewer quick-look"
         ar-scale="fixed"
@@ -200,6 +189,22 @@
       ></model-viewer>
     </main>
 
-    <script type="module" src="./src/main.js"></script>
+    <script>
+      window.__viewerBooted = false;
+      window.showViewerBootError = () => {
+        if (window.__viewerBooted) return;
+        document.querySelector("#loading-screen").hidden = true;
+        document.querySelector("#error-screen").hidden = false;
+        document.querySelector("#error-message").textContent =
+          "三维引擎未能启动。请强制刷新页面后重试；本站运行文件已改为站内加载。";
+        document.querySelector("#render-status-text").textContent = "启动失败";
+      };
+      window.setTimeout(window.showViewerBootError, 30000);
+    </script>
+    <script
+      type="module"
+      src="./assets/js/main.bundle.js?v=20260725-2"
+      onerror="window.showViewerBootError()"
+    ></script>
   </body>
 </html>

@@ -3,3 +3,4 @@
 *.webp binary
 *.png binary
 *.svg text
+assets/js/*.js -whitespace

@@ -23,6 +23,8 @@
 浏览器出于安全策略不能直接从 `file://` 加载模型，请使用本地 HTTP 服务：
 
 ```bash
+npm install
+npm run build
 python3 -m http.server 4173
 ```
 
@@ -34,4 +36,5 @@ python3 -m http.server 4173
 - 独立低面数碰撞模型配合 Octree + Capsule，用于静态建筑碰撞
 - MeshOpt 用于 GLB 几何压缩
 - `<model-viewer>` 负责 WebXR、Scene Viewer 与 Quick Look 的 AR 分发
+- Three.js、MeshOpt 和 `<model-viewer>` 均随站点发布，不依赖外部 CDN
 - GitHub Pages 从 `main` 分支根目录直接发布

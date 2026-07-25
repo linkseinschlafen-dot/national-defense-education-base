@@ -6,9 +6,11 @@ import { Octree } from "three/addons/math/Octree.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
-const MODEL_URL = "./assets/models/defense-base.glb";
+window.__viewerBooted = true;
+
+const MODEL_URL = "./assets/models/defense-base.glb?v=20260725-2";
 const COLLISION_MODEL_URL = "./assets/models/defense-base-collision.glb";
-const AR_MODEL_URL = "./assets/models/defense-base-ar.glb";
+const AR_MODEL_URL = "./assets/models/defense-base-ar.glb?v=20260725-2";
 const PAGE_URL = "https://linkseinschlafen-dot.github.io/national-defense-education-base/";
 const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
@@ -55,20 +57,20 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, isCoarsePointer ? 1.45 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.94;
+renderer.toneMappingExposure = 0.9;
 
 const environmentGenerator = new THREE.PMREMGenerator(renderer);
 scene.environment = environmentGenerator.fromScene(new RoomEnvironment(), 0.03).texture;
 environmentGenerator.dispose();
 
-const hemisphereLight = new THREE.HemisphereLight(0xe8ece8, 0x2f332f, 2.2);
+const hemisphereLight = new THREE.HemisphereLight(0xdce4df, 0x202722, 0.3);
 scene.add(hemisphereLight);
 
-const keyLight = new THREE.DirectionalLight(0xfff1dc, 4.2);
+const keyLight = new THREE.DirectionalLight(0xffdfbd, 1);
 keyLight.position.set(38, 52, 22);
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0xb9ced1, 1.7);
+const fillLight = new THREE.DirectionalLight(0xa8c2ce, 0.18);
 fillLight.position.set(-32, 22, -28);
 scene.add(fillLight);
 
@@ -111,6 +113,7 @@ let lastTouchLookY = 0;
 let joystickPointer = null;
 let arReady = false;
 let previousFrameTime = performance.now();
+let modelLoadTimeout = null;
 
 function setLoadingProgress(percent, message) {
   const boundedPercent = Math.max(0, Math.min(100, Math.round(percent)));
@@ -120,6 +123,10 @@ function setLoadingProgress(percent, message) {
 }
 
 function showLoadError(error) {
+  if (modelLoadTimeout) {
+    window.clearTimeout(modelLoadTimeout);
+    modelLoadTimeout = null;
+  }
   console.error(error);
   loadingScreen.hidden = true;
   errorScreen.hidden = false;
@@ -370,6 +377,10 @@ const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
 
 function finishSceneSetup() {
+  if (modelLoadTimeout) {
+    window.clearTimeout(modelLoadTimeout);
+    modelLoadTimeout = null;
+  }
   chooseSpawnPosition();
   resetPlayerPosition();
   prepareOverviewCamera();
@@ -403,6 +414,10 @@ function loadCollisionModel() {
   );
 }
 
+modelLoadTimeout = window.setTimeout(() => {
+  showLoadError(new Error("Model loading timed out after 120 seconds."));
+}, 120000);
+
 loader.load(
   MODEL_URL,
   (gltf) => {
@@ -414,7 +429,7 @@ loader.load(
       child.receiveShadow = false;
       const materials = Array.isArray(child.material) ? child.material : [child.material];
       for (const material of materials) {
-        if (material && "envMapIntensity" in material) material.envMapIntensity = 0.72;
+        if (material && "envMapIntensity" in material) material.envMapIntensity = 0.14;
       }
     });
 
