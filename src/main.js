@@ -8,9 +8,9 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
 window.__viewerBooted = true;
 
-const MODEL_URL = "./assets/models/defense-base.glb?v=20260725-4";
-const COLLISION_MODEL_URL = "./assets/models/defense-base-collision.glb?v=20260725-4";
-const AR_MODEL_URL = "./assets/models/defense-base-ar.glb?v=20260725-4";
+const MODEL_URL = "./assets/models/defense-base.glb?v=20260725-5";
+const COLLISION_MODEL_URL = "./assets/models/defense-base-collision.glb?v=20260725-5";
+const AR_MODEL_URL = "./assets/models/defense-base-ar.glb?v=20260725-5";
 const PAGE_URL = "https://linkseinschlafen-dot.github.io/national-defense-education-base/";
 const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
