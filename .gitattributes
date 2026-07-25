@@ -2,3 +2,4 @@
 *.usdz binary
 *.webp binary
 *.png binary
+*.svg text
