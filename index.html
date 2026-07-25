@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta
+      name="description"
+      content="国防教育基地三维在线展示：支持全景拖拽、第一人称游览与手机 AR 浏览。"
+    >
+    <meta name="theme-color" content="#0d1110">
+    <title>国防教育基地 · 三维游览</title>
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin>
+    <link rel="stylesheet" href="./styles.css">
+
+    <script>
+      self.ModelViewerElement = self.ModelViewerElement || {};
+      self.ModelViewerElement.meshoptDecoderLocation =
+        "https://cdn.jsdelivr.net/npm/meshoptimizer@0.22.0/meshopt_decoder.js";
+    </script>
+    <script
+      type="module"
+      src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"
+    ></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <main id="app" data-mode="orbit">
+      <canvas id="scene-canvas" role="img" aria-label="国防教育基地三维场景"></canvas>
+      <div class="canvas-shade" aria-hidden="true"></div>
+
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="返回国防教育基地全景">
+          <span class="brand-rule" aria-hidden="true"></span>
+          <span>
+            <strong>国防教育基地</strong>
+            <small>NATIONAL DEFENSE EDUCATION BASE</small>
+          </span>
+        </a>
+
+        <div class="header-actions">
+          <span class="render-status">
+            <i aria-hidden="true"></i>
+            <span id="render-status-text">正在初始化</span>
+          </span>
+          <button id="info-button" class="text-button" type="button" aria-expanded="false">
+            项目信息
+          </button>
+          <button id="fullscreen-button" class="text-button" type="button">
+            全屏
+          </button>
+        </div>
+      </header>
+
+      <section id="scene-caption" class="scene-caption" aria-live="polite">
+        <p class="eyebrow">线上三维展陈</p>
+        <h1>以全景观察建筑，<br>以步行进入空间。</h1>
+        <p id="mode-description">拖拽旋转场景，滚轮或双指缩放。</p>
+      </section>
+
+      <aside id="info-panel" class="info-panel" inert>
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">MODEL FILE</p>
+            <h2>国防教育基地</h2>
+          </div>
+          <button id="close-info-button" class="close-button" type="button" aria-label="关闭项目信息">
+            关闭
+          </button>
+        </div>
+
+        <dl class="model-facts">
+          <div>
+            <dt>建筑范围</dt>
+            <dd>55 × 65 米</dd>
+          </div>
+          <div>
+            <dt>场景高度</dt>
+            <dd>约 9.1 米</dd>
+          </div>
+          <div>
+            <dt>网页模型</dt>
+            <dd>约 20 万面</dd>
+          </div>
+          <div>
+            <dt>AR 比例</dt>
+            <dd>1:50 桌面模型</dd>
+          </div>
+        </dl>
+
+        <div class="panel-copy">
+          <p>
+            “全景”用于观察整体布局；“进入游览”提供真实尺度的第一人称视角与建筑碰撞；
+            “AR 浏览”可在支持的手机上将缩比模型放置到现实空间。
+          </p>
+        </div>
+      </aside>
+
+      <nav class="mode-dock" aria-label="三维浏览模式">
+        <button class="mode-button is-active" data-mode-target="orbit" type="button" aria-pressed="true">
+          <span>01</span>
+          全景
+        </button>
+        <button class="mode-button" data-mode-target="walk" type="button" aria-pressed="false" disabled>
+          <span>02</span>
+          进入游览
+        </button>
+        <button id="ar-button" class="mode-button" data-mode-target="ar" type="button" disabled>
+          <span>03</span>
+          AR 浏览
+        </button>
+      </nav>
+
+      <div id="walk-guide" class="walk-guide" inert>
+        <span><kbd>W A S D</kbd> 移动</span>
+        <span><kbd>鼠标</kbd> 环视</span>
+        <span><kbd>Shift</kbd> 加速</span>
+        <span><kbd>Space</kbd> 跨越台阶</span>
+        <button id="reset-position-button" type="button">返回入口</button>
+      </div>
+
+      <div id="pointer-lock-prompt" class="pointer-lock-prompt" hidden>
+        <p>单击画面继续游览</p>
+        <small>按 Esc 可释放鼠标</small>
+      </div>
+
+      <div id="mobile-controls" class="mobile-controls" role="group" aria-label="移动游览控制">
+        <div id="joystick" class="joystick">
+          <div id="joystick-thumb" class="joystick-thumb"></div>
+        </div>
+        <p>左侧移动 · 右侧滑动环视</p>
+      </div>
+
+      <section id="loading-screen" class="loading-screen" aria-live="polite">
+        <div class="loading-copy">
+          <p class="eyebrow">3D EXPERIENCE</p>
+          <h2>正在建立空间</h2>
+          <div class="progress-track" aria-hidden="true">
+            <i id="progress-bar"></i>
+          </div>
+          <div class="loading-meta">
+            <span id="loading-message">正在载入建筑模型</span>
+            <span id="loading-percent">0%</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="error-screen" class="error-screen" hidden>
+        <p class="eyebrow">LOAD ERROR</p>
+        <h2>三维场景暂时无法载入</h2>
+        <p id="error-message">请刷新页面或检查网络连接。</p>
+        <button type="button" onclick="window.location.reload()">重新载入</button>
+      </section>
+
+      <dialog id="ar-help" class="ar-help">
+        <button id="close-ar-help" class="close-button" type="button" aria-label="关闭 AR 帮助">
+          关闭
+        </button>
+        <div class="ar-help-layout">
+          <img
+            src="./assets/images/ar-qr.png"
+            width="248"
+            height="248"
+            alt="在手机上打开本页面的二维码"
+          >
+          <div>
+            <p class="eyebrow">MOBILE AR</p>
+            <h2>请使用手机打开</h2>
+            <p>
+              Android 将优先使用 WebXR 或 Scene Viewer；iPhone 将使用 AR Quick Look。
+              页面必须通过 HTTPS 打开，GitHub Pages 已满足此要求。
+            </p>
+            <button id="copy-link-button" class="primary-button" type="button">复制页面链接</button>
+          </div>
+        </div>
+      </dialog>
+
+      <model-viewer
+        id="ar-launcher"
+        class="ar-launcher"
+        ios-src="./assets/models/defense-base-ar.usdz"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-scale="fixed"
+        ar-placement="floor"
+        loading="eager"
+        xr-environment
+        alt="国防教育基地缩比三维模型"
+      ></model-viewer>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
