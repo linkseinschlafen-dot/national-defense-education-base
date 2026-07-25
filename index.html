@@ -11,16 +11,16 @@
     <title>国防教育基地 · 三维游览</title>
 
     <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css?v=20260725-6">
 
     <script>
       self.ModelViewerElement = self.ModelViewerElement || {};
       self.ModelViewerElement.meshoptDecoderLocation =
-        "./assets/js/meshopt_decoder.js?v=20260725-5";
+        "./assets/js/meshopt_decoder.js?v=20260725-6";
     </script>
     <script
       type="module"
-      src="./assets/js/model-viewer.min.js?v=20260725-5"
+      src="./assets/js/model-viewer.min.js?v=20260725-6"
     ></script>
   </head>
 
@@ -43,9 +43,6 @@
             <i aria-hidden="true"></i>
             <span id="render-status-text">正在初始化</span>
           </span>
-          <button id="info-button" class="text-button" type="button" aria-expanded="false">
-            项目信息
-          </button>
           <button id="fullscreen-button" class="text-button" type="button">
             全屏
           </button>
@@ -57,44 +54,6 @@
         <h1>以全景观察建筑，<br>以步行进入空间。</h1>
         <p id="mode-description">拖拽旋转场景，滚轮或双指缩放。</p>
       </section>
-
-      <aside id="info-panel" class="info-panel" inert>
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">MODEL FILE</p>
-            <h2>国防教育基地</h2>
-          </div>
-          <button id="close-info-button" class="close-button" type="button" aria-label="关闭项目信息">
-            关闭
-          </button>
-        </div>
-
-        <dl class="model-facts">
-          <div>
-            <dt>建筑范围</dt>
-            <dd>55 × 65 米</dd>
-          </div>
-          <div>
-            <dt>场景高度</dt>
-            <dd>约 9.1 米</dd>
-          </div>
-          <div>
-            <dt>网页模型</dt>
-            <dd>约 20 万面</dd>
-          </div>
-          <div>
-            <dt>AR 比例</dt>
-            <dd>1:50 桌面模型</dd>
-          </div>
-        </dl>
-
-        <div class="panel-copy">
-          <p>
-            “全景”用于观察整体布局；“进入游览”提供真实尺度的第一人称视角与建筑碰撞；
-            “AR 浏览”可在支持的手机上将缩比模型放置到现实空间。
-          </p>
-        </div>
-      </aside>
 
       <nav class="mode-dock" aria-label="三维浏览模式">
         <button class="mode-button is-active" data-mode-target="orbit" type="button" aria-pressed="true">
@@ -178,7 +137,7 @@
       <model-viewer
         id="ar-launcher"
         class="ar-launcher"
-        ios-src="./assets/models/defense-base-ar.usdz?v=20260725-5"
+        ios-src="./assets/models/defense-base-ar.usdz?v=20260725-6"
         ar
         ar-modes="webxr scene-viewer quick-look"
         ar-scale="fixed"
@@ -203,7 +162,7 @@
     </script>
     <script
       type="module"
-      src="./assets/js/main.bundle.js?v=20260725-5"
+      src="./assets/js/main.bundle.js?v=20260725-6"
       onerror="window.showViewerBootError()"
     ></script>
   </body>

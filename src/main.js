@@ -8,9 +8,9 @@ import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
 window.__viewerBooted = true;
 
-const MODEL_URL = "./assets/models/defense-base.glb?v=20260725-5";
-const COLLISION_MODEL_URL = "./assets/models/defense-base-collision.glb?v=20260725-5";
-const AR_MODEL_URL = "./assets/models/defense-base-ar.glb?v=20260725-5";
+const MODEL_URL = "./assets/models/defense-base.glb?v=20260725-6";
+const COLLISION_MODEL_URL = "./assets/models/defense-base-collision.glb?v=20260725-6";
+const AR_MODEL_URL = "./assets/models/defense-base-ar.glb?v=20260725-6";
 const PAGE_URL = "https://linkseinschlafen-dot.github.io/national-defense-education-base/";
 const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
@@ -26,9 +26,6 @@ const renderStatus = document.querySelector(".render-status");
 const renderStatusText = document.querySelector("#render-status-text");
 const modeDescription = document.querySelector("#mode-description");
 const walkGuide = document.querySelector("#walk-guide");
-const infoButton = document.querySelector("#info-button");
-const infoPanel = document.querySelector("#info-panel");
-const closeInfoButton = document.querySelector("#close-info-button");
 const fullscreenButton = document.querySelector("#fullscreen-button");
 const pointerLockPrompt = document.querySelector("#pointer-lock-prompt");
 const resetPositionButton = document.querySelector("#reset-position-button");
@@ -81,6 +78,7 @@ orbitControls.screenSpacePanning = false;
 orbitControls.minPolarAngle = 0.22;
 orbitControls.maxPolarAngle = Math.PI / 2.03;
 orbitControls.zoomToCursor = true;
+orbitControls.addEventListener("start", dismissSceneCaption);
 
 const worldOctree = new Octree();
 const modelBounds = new THREE.Box3();
@@ -114,6 +112,10 @@ let joystickPointer = null;
 let arReady = false;
 let previousFrameTime = performance.now();
 let modelLoadTimeout = null;
+
+function dismissSceneCaption() {
+  app.classList.add("has-interacted");
+}
 
 function setLoadingProgress(percent, message) {
   const boundedPercent = Math.max(0, Math.min(100, Math.round(percent)));
@@ -336,14 +338,6 @@ function resetJoystick() {
   joystickThumb.style.transform = "translate(-50%, -50%)";
 }
 
-function toggleInfoPanel(forceOpen) {
-  const shouldOpen =
-    typeof forceOpen === "boolean" ? forceOpen : !infoPanel.classList.contains("is-open");
-  infoPanel.classList.toggle("is-open", shouldOpen);
-  infoPanel.inert = !shouldOpen;
-  infoButton.setAttribute("aria-expanded", String(shouldOpen));
-}
-
 function handleArRequest() {
   if (arReady && arLauncher.canActivateAR) {
     arLauncher.activateAR();
@@ -453,6 +447,7 @@ loader.load(
 
 for (const button of modeButtons) {
   button.addEventListener("click", () => {
+    dismissSceneCaption();
     const targetMode = button.dataset.modeTarget;
     if (targetMode === "ar") {
       handleArRequest();
@@ -496,6 +491,7 @@ canvas.addEventListener("click", () => {
 });
 
 canvas.addEventListener("pointerdown", (event) => {
+  dismissSceneCaption();
   if (
     !isCoarsePointer ||
     activeMode !== "walk" ||
@@ -527,6 +523,7 @@ canvas.addEventListener("pointercancel", (event) => {
 });
 
 joystick.addEventListener("pointerdown", (event) => {
+  dismissSceneCaption();
   joystickPointer = event.pointerId;
   joystick.setPointerCapture(event.pointerId);
   updateJoystick(event);
@@ -542,8 +539,6 @@ joystick.addEventListener("pointerup", (event) => {
 
 joystick.addEventListener("pointercancel", resetJoystick);
 
-infoButton.addEventListener("click", () => toggleInfoPanel());
-closeInfoButton.addEventListener("click", () => toggleInfoPanel(false));
 resetPositionButton.addEventListener("click", resetPlayerPosition);
 
 fullscreenButton.addEventListener("click", async () => {
